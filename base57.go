@@ -5,8 +5,6 @@ import (
 	"math"
 	"math/big"
 	"strings"
-
-	"github.com/google/uuid"
 )
 
 type base57 struct {
@@ -16,9 +14,9 @@ type base57 struct {
 
 // Encode encodes uuid.UUID into a string using the most significant bits (MSB)
 // first according to the alphabet.
-func (b base57) Encode(u uuid.UUID) string {
+func (b base57) Encode(u string) string {
 	var num big.Int
-	num.SetString(strings.Replace(u.String(), "-", "", 4), 16)
+	num.SetString(strings.Replace(u, "-", "", 4), 16)
 
 	// Calculate encoded length.
 	length := math.Ceil(math.Log(math.Pow(2, 128)) / math.Log(float64(b.alphabet.Length())))
@@ -28,12 +26,12 @@ func (b base57) Encode(u uuid.UUID) string {
 
 // Decode decodes a string according to the alphabet into a uuid.UUID. If s is
 // too short, its most significant bits (MSB) will be padded with 0 (zero).
-func (b base57) Decode(u string) (uuid.UUID, error) {
+func (b base57) Decode(u string) (string, error) {
 	str, err := b.stringToNum(u)
 	if err != nil {
-		return uuid.Nil, err
+		return "", err
 	}
-	return uuid.Parse(str)
+	return str, err
 }
 
 // numToString converts a number a string using the given alphabet.
